@@ -267,7 +267,7 @@ enum
 {
   SPECIAL_GLOB, // Global table
   SPECIAL_ENV,  // Environment table
-  SPECIAL_REG,  // Registry table
+  SPECIAL_REG   // Registry table
 };
 } // namespace Lua
 } // namespace GarrysMod
