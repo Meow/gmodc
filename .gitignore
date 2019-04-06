@@ -1,0 +1,10 @@
+.vscode
+*/.vscode
+gmsv_example/.vs/
+gmsv_example/Release/
+gmsv_example/Debug/
+*.sln
+*.vcxproj
+*.vcproj 
+*.filters
+*.user
