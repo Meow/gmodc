@@ -22,7 +22,7 @@ workspace 'example'
 
   -- Link stdlib statically for compatibility.
   if is_linux then
-    linkoptions{ '-static-libgcc' }
+    linkoptions{ '-static-libstdc++', '-static-libgcc' }
   else
     staticruntime 'on'
   end
