@@ -4,20 +4,11 @@
 #include "CCompat.h"
 
 #define GET_LUABASE(l) \
-  GarrysMod::Lua::ILuaBase *l = (GarrysMod::Lua::ILuaBase*)(L->obj);
+  GarrysMod::Lua::ILuaBase *l = (GarrysMod::Lua::ILuaBase*)(L);
 
-#ifdef _WIN32
-#pragma warning( push )
-#pragma warning( disable : 4172) /* it's fine */
-#endif
 luabase_t *lua_get_base(lua_State *L) {
-  luabase_t l;
-  l.obj = L->luabase;
-  return &l;
+  return (luabase_t*)L->luabase;
 }
-#ifdef _WIN32
-#pragma warning( pop ) 
-#endif
 
 int lua_top(luabase_t *L) {
   GET_LUABASE(l)

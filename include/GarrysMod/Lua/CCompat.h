@@ -11,10 +11,7 @@
 extern "C" {
 #endif
 
-  struct iluabase {
-    void *obj;
-  };
-  typedef struct iluabase luabase_t;
+  typedef void luabase_t;
 
   typedef struct {
     void *data;
