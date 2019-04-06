@@ -3,6 +3,8 @@
 gmsv_example/.vs/
 gmsv_example/Release/
 gmsv_example/Debug/
+gmsv_example/bin/
+gmsv_example/project/
 *.sln
 *.vcxproj
 *.vcproj 
