@@ -9,12 +9,12 @@
 */
 
 LUA_FUNCTION(my_function) {
-  char str_out[512];
+  char str_out[64];
   double number;
 
   if (lua_is_type(LUA, 1, TYPE_NUMBER)) {
     number = lua_get_number(LUA, 1);
-    sprintf_s(str_out, sizeof(str_out), "Thanks for the number, I like %f!", number);
+    sprintf(str_out, "Thanks for the number, I like %f!", number);
     lua_push_string(LUA, str_out, 0);
 
     return 1;
