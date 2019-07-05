@@ -9,14 +9,10 @@
 #undef VECTOR
 #endif
 
-namespace GarrysMod
-{
-namespace Lua
-{
-namespace Type
-{
-enum
-{
+namespace GarrysMod {
+namespace Lua {
+namespace Type {
+enum {
 #ifdef GMOD_ALLOW_DEPRECATED
   // Deprecated: Use NONE instead of INVALID
   INVALID = -1,
@@ -75,53 +71,51 @@ enum
 
 #if (defined(GMOD) || defined(GMOD_ALLOW_DEPRECATED))
 // You should use ILuaBase::GetTypeName instead of directly accessing this array
-static const char *Name[] =
-    {
-        "nil",
-        "bool",
-        "lightuserdata",
-        "number",
-        "string",
-        "table",
-        "function",
-        "userdata",
-        "thread",
-        "entity",
-        "vector",
-        "angle",
-        "physobj",
-        "save",
-        "restore",
-        "damageinfo",
-        "effectdata",
-        "movedata",
-        "recipientfilter",
-        "usercmd",
-        "vehicle",
-        "material",
-        "panel",
-        "particle",
-        "particleemitter",
-        "texture",
-        "usermsg",
-        "convar",
-        "mesh",
-        "matrix",
-        "sound",
-        "pixelvishandle",
-        "dlight",
-        "video",
-        "file",
-        "locomotion",
-        "path",
-        "navarea",
-        "soundhandle",
-        "navladder",
-        "particlesystem",
-        "projectedtexture",
-        "physcollide",
+static const char *Name[] = {"nil",
+                             "bool",
+                             "lightuserdata",
+                             "number",
+                             "string",
+                             "table",
+                             "function",
+                             "userdata",
+                             "thread",
+                             "entity",
+                             "vector",
+                             "angle",
+                             "physobj",
+                             "save",
+                             "restore",
+                             "damageinfo",
+                             "effectdata",
+                             "movedata",
+                             "recipientfilter",
+                             "usercmd",
+                             "vehicle",
+                             "material",
+                             "panel",
+                             "particle",
+                             "particleemitter",
+                             "texture",
+                             "usermsg",
+                             "convar",
+                             "mesh",
+                             "matrix",
+                             "sound",
+                             "pixelvishandle",
+                             "dlight",
+                             "video",
+                             "file",
+                             "locomotion",
+                             "path",
+                             "navarea",
+                             "soundhandle",
+                             "navladder",
+                             "particlesystem",
+                             "projectedtexture",
+                             "physcollide",
 
-        0};
+                             0};
 #endif
 } // namespace Type
 } // namespace Lua

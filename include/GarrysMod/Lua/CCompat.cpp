@@ -3,12 +3,10 @@
 #include "Interface.h"
 #include "CCompat.h"
 
-#define GET_LUABASE(l) \
-  GarrysMod::Lua::ILuaBase *l = (GarrysMod::Lua::ILuaBase*)(L);
+#define GET_LUABASE(l)                                                         \
+  GarrysMod::Lua::ILuaBase *l = (GarrysMod::Lua::ILuaBase *)(L);
 
-luabase_t *lua_get_base(lua_State *L) {
-  return (luabase_t*)L->luabase;
-}
+luabase_t *lua_get_base(lua_State *L) { return (luabase_t *)L->luabase; }
 
 int lua_top(luabase_t *L) {
   GET_LUABASE(l)
@@ -120,7 +118,7 @@ void lua_raw_set(luabase_t *L, int stack_pos) {
   l->RawSet(stack_pos);
 }
 
-const char* lua_get_string(luabase_t *L, int stack_pos, unsigned int *out_len) {
+const char *lua_get_string(luabase_t *L, int stack_pos, unsigned int *out_len) {
   GET_LUABASE(l)
   return l->GetString(stack_pos, out_len);
 }
@@ -200,12 +198,12 @@ int lua_is_type(luabase_t *L, int stack_pos, int type) {
   return l->IsType(stack_pos, type);
 }
 
-const char* lua_get_type_name(luabase_t *L, int type) {
+const char *lua_get_type_name(luabase_t *L, int type) {
   GET_LUABASE(l)
   return l->GetTypeName(type);
 }
 
-const char* lua_check_string(luabase_t *L, int stack_pos) {
+const char *lua_check_string(luabase_t *L, int stack_pos) {
   GET_LUABASE(l)
   return l->CheckString(stack_pos);
 }
