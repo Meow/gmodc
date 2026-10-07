@@ -1,6 +1,13 @@
 #ifndef GMODC_LUA_LUA_H
 #define GMODC_LUA_LUA_H
 
+/*
+  Minimal lua_State layout: enough padding to reach the `luabase` pointer
+  that Garry's Mod stores in every state. Only lua_get_base reads it; module
+  code should treat lua_State as opaque. Skipped when the C++ Interface.h has
+  already defined the struct.
+*/
+
 #ifndef GARRYSMOD_LUA_INTERFACE_H
 
 typedef struct {
