@@ -2,6 +2,7 @@
 #define GMOD_ALLOW_DEPRECATED
 
 #include <stdlib.h>
+#include <string.h>
 #include "LuaBase.h"
 #include "Interface.h"
 #include "CCompat.h"
@@ -56,9 +57,9 @@ void lua_set_meta_table(luabase_t *L, int stack_pos) {
   l->SetMetaTable(stack_pos);
 }
 
-void lua_get_meta_table(luabase_t *L, int stack_pos) {
+int lua_get_meta_table(luabase_t *L, int stack_pos) {
   GET_LUABASE(l)
-  l->GetMetaTable(stack_pos);
+  return l->GetMetaTable(stack_pos);
 }
 
 void lua_call(luabase_t *L, int args, int results) {
@@ -94,6 +95,11 @@ void lua_remove(luabase_t *L, int stack_pos) {
 int lua_next(luabase_t *L, int stack_pos) {
   GET_LUABASE(l)
   return l->Next(stack_pos);
+}
+
+void *lua_new_userdata(luabase_t *L, unsigned int size) {
+  GET_LUABASE(l)
+  return l->NewUserdata(size);
 }
 
 void lua_throw_error(luabase_t *L, const char *message) {
@@ -139,6 +145,11 @@ int lua_get_bool(luabase_t *L, int stack_pos) {
 cfunc_t lua_get_cfunc(luabase_t *L, int stack_pos) {
   GET_LUABASE(l)
   return (cfunc_t)l->GetCFunction(stack_pos);
+}
+
+void *lua_get_userdata(luabase_t *L, int stack_pos) {
+  GET_LUABASE(l)
+  return l->GetUserdata(stack_pos);
 }
 
 void lua_push_nil(luabase_t *L) {
@@ -201,9 +212,19 @@ int lua_is_type(luabase_t *L, int stack_pos, int type) {
   return l->IsType(stack_pos, type);
 }
 
+int lua_get_type(luabase_t *L, int stack_pos) {
+  GET_LUABASE(l)
+  return l->GetType(stack_pos);
+}
+
 const char *lua_get_type_name(luabase_t *L, int type) {
   GET_LUABASE(l)
   return l->GetTypeName(type);
+}
+
+void lua_create_meta_table_type(luabase_t *L, const char *name, int type) {
+  GET_LUABASE(l)
+  l->CreateMetaTableType(name, type);
 }
 
 const char *lua_check_string(luabase_t *L, int stack_pos) {
@@ -221,27 +242,25 @@ int lua_obj_len(luabase_t *L, int stack_pos) {
   return l->ObjLen(stack_pos);
 }
 
-/*
 const QAngle *lua_get_angle(luabase_t *L, int stack_pos) {
   GET_LUABASE(l)
-  return l->GetAngle(stack_pos);
+  return &l->GetAngle(stack_pos);
 }
 
 const Vector *lua_get_vector(luabase_t *L, int stack_pos) {
   GET_LUABASE(l)
-  return *l->GetVector(stack_pos);
+  return &l->GetVector(stack_pos);
 }
 
-void lua_push_angle(luabase_t *L, QAngle val) {
+void lua_push_angle(luabase_t *L, const QAngle *val) {
   GET_LUABASE(l)
-  l->PushAngle(&val);
+  l->PushAngle(*val);
 }
 
-void lua_push_vector(luabase_t *L, Vector val) {
+void lua_push_vector(luabase_t *L, const Vector *val) {
   GET_LUABASE(l)
-  l->PushVector(val);
+  l->PushVector(*val);
 }
-*/
 
 void lua_set_state(luabase_t *L, lua_State *state) {
   GET_LUABASE(l)
@@ -266,4 +285,20 @@ void lua_push_user_type(luabase_t *L, void *data, int type) {
 void lua_set_user_type(luabase_t *L, int stack_pos, void *data) {
   GET_LUABASE(l)
   l->SetUserType(stack_pos, data);
+}
+
+void *lua_get_user_type(luabase_t *L, int stack_pos, int type) {
+  GET_LUABASE(l)
+  return l->GetUserType<void>(stack_pos, type);
+}
+
+void lua_push_user_type_value(luabase_t *L, const void *val, unsigned int size,
+                              int type) {
+  GET_LUABASE(l)
+  userdata_t *ud = (userdata_t *)l->NewUserdata(sizeof(userdata_t) + size);
+  ud->data = memcpy(ud + 1, val, size);
+  ud->type = (unsigned char)type;
+
+  if (l->PushMetaTable(type))
+    l->SetMetaTable(-2);
 }
