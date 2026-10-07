@@ -2,10 +2,11 @@
 #define GARRYSMOD_LUA_LUABASE_H
 
 #include <stddef.h>
+#include <type_traits>
 
+#include "SourceCompat.h"
 #include "Types.h"
 #include "UserData.h"
-#include "SourceCompat.h"
 
 struct lua_State;
 
@@ -22,9 +23,15 @@ public:
   // Instead, use the UserType functions
   struct UserData {
     void *data;
-    unsigned char type;
+    unsigned char type; // Change me to a uint32 one day
   };
 
+protected:
+  template <class T> struct UserData_Value : UserData {
+    T value;
+  };
+
+public:
   // Returns the amount of values on the stack
   virtual int Top(void) = 0;
 
@@ -37,6 +44,7 @@ public:
   // Pushes table[key] on to the stack
   // table = value at iStackPos
   // key   = value at top of the stack
+  // Pops the key from the stack
   virtual void GetTable(int iStackPos) = 0;
 
   // Pushes table[key] on to the stack
@@ -100,7 +108,7 @@ public:
   virtual int Next(int iStackPos) = 0;
 
 #ifndef GMOD_ALLOW_DEPRECATED
-private:
+protected:
 #endif
   // Deprecated: Use the UserType functions instead of this
   virtual void *NewUserdata(unsigned int iSize) = 0;
@@ -155,7 +163,7 @@ public:
   virtual CFunc GetCFunction(int iStackPos = -1) = 0;
 
 #ifndef GMOD_ALLOW_DEPRECATED
-private:
+protected:
 #endif
   // Deprecated: You should probably be using the UserType functions instead of
   // this
@@ -182,9 +190,13 @@ public:
   // See: GetUpvalueIndex()
   virtual void PushCClosure(CFunc val, int iVars) = 0;
 
-  // Pushes the given pointer on to the stack as light-userdata
+#ifndef GMOD_ALLOW_DEPRECATED
+protected:
+#endif
+  // Deprecated: Don't use light userdata in GMod
   virtual void PushUserdata(void *) = 0;
 
+public:
   // Allows for values to be stored by reference for later use
   // Make sure you call ReferenceFree when you are done with a reference
   virtual int ReferenceCreate() = 0;
@@ -208,7 +220,7 @@ public:
   virtual const char *GetTypeName(int iType) = 0;
 
 #ifndef GMOD_ALLOW_DEPRECATED
-private:
+protected:
 #endif
   // Deprecated: Use CreateMetaTable
   virtual void CreateMetaTableType(const char *strName, int iType) = 0;
@@ -257,12 +269,38 @@ public:
 
   // Returns the data of the UserType at iStackPos if it is of the given type
   template <class T> T *GetUserType(int iStackPos, int iType) {
-    UserData *ud = (UserData *)GetUserdata(iStackPos);
+    auto *ud = static_cast<UserData *>(GetUserdata(iStackPos));
 
-    if (ud == NULL || ud->data == NULL || ud->type != iType)
-      return NULL;
+    if (ud == nullptr || ud->data == nullptr || ud->type != iType)
+      return nullptr;
 
-    return reinterpret_cast<T *>(ud->data);
+    return static_cast<T *>(ud->data);
+  }
+
+  // Creates a new UserData with your own data embedded within it
+  template <class T> void PushUserType_Value(const T &val, int iType) {
+    using UserData_T = UserData_Value<T>;
+
+    // The UserData allocated by CLuaInterface is only guaranteed to have a data
+    // alignment of 8
+    static_assert(
+        std::alignment_of<UserData_T>::value <= 8,
+        "PushUserType_Value given type with unsupported alignment requirement");
+
+    // Don't give this function objects that can't be trivially destructed
+    // You could ignore this limitation if you implement object destruction in
+    // `__gc`
+    static_assert(
+        std::is_trivially_destructible<UserData_T>::value,
+        "PushUserType_Value given type that is not trivially destructible");
+
+    auto *ud = static_cast<UserData_T *>(NewUserdata(sizeof(UserData_T)));
+    ud->data = new (&ud->value) T(val);
+    ud->type = iType;
+
+    // Set the metatable
+    if (PushMetaTable(iType))
+      SetMetaTable(-2);
   }
 };
 
@@ -270,7 +308,7 @@ public:
 enum {
   SPECIAL_GLOB, // Global table
   SPECIAL_ENV,  // Environment table
-  SPECIAL_REG   // Registry table
+  SPECIAL_REG,  // Registry table
 };
 } // namespace Lua
 } // namespace GarrysMod

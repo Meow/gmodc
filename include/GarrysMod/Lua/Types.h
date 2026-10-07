@@ -1,72 +1,65 @@
 #ifndef GARRYSMOD_LUA_TYPES_H
 #define GARRYSMOD_LUA_TYPES_H
 
-#ifdef ENTITY
-#undef ENTITY
-#endif
-
-#ifdef VECTOR
-#undef VECTOR
-#endif
-
 namespace GarrysMod {
 namespace Lua {
 namespace Type {
 enum {
 #ifdef GMOD_ALLOW_DEPRECATED
-  // Deprecated: Use NONE instead of INVALID
-  INVALID = -1,
+  // Deprecated: Use `None` instead of `Invalid`
+  Invalid = -1,
 #endif
 
-  // Lua Types
-  NONE = -1,
-  NIL,
-  BOOL,
-  LIGHTUSERDATA,
-  NUMBER,
-  STRING,
-  TABLE,
-  FUNCTION,
-  USERDATA,
-  THREAD,
+  // Default Lua Types
+  None = -1,
+  Nil,
+  Bool,
+  LightUserData,
+  Number,
+  String,
+  Table,
+  Function,
+  UserData,
+  Thread,
 
   // GMod Types
-  ENTITY,
-  VECTOR,
-  ANGLE,
-  PHYSOBJ,
-  SAVE,
-  RESTORE,
-  DAMAGEINFO,
-  EFFECTDATA,
-  MOVEDATA,
-  RECIPIENTFILTER,
-  USERCMD,
-  SCRIPTEDVEHICLE,
-  MATERIAL,
-  PANEL,
-  PARTICLE,
-  PARTICLEEMITTER,
-  TEXTURE,
-  USERMSG,
-  CONVAR,
-  IMESH,
-  MATRIX,
-  SOUND,
-  PIXELVISHANDLE,
-  DLIGHT,
-  VIDEO,
-  FILE,
-  LOCOMOTION,
-  PATH,
-  NAVAREA,
-  SOUNDHANDLE,
-  NAVLADDER,
-  PARTICLESYSTEM,
-  PROJECTEDTEXTURE,
-  PHYSCOLLIDE,
+  Entity,
+  Vector,
+  Angle,
+  PhysObj,
+  Save,
+  Restore,
+  DamageInfo,
+  EffectData,
+  MoveData,
+  RecipientFilter,
+  UserCmd,
+  ScriptedVehicle,
+  Material,
+  Panel,
+  Particle,
+  ParticleEmitter,
+  Texture,
+  UserMsg,
+  ConVar,
+  IMesh,
+  Matrix,
+  Sound,
+  PixelVisHandle,
+  DLight,
+  Video,
+  File,
+  Locomotion,
+  Path,
+  NavArea,
+  SoundHandle,
+  NavLadder,
+  ParticleSystem,
+  ProjectedTexture,
+  PhysCollide,
+  SurfaceInfo,
 
-  COUNT
+  Type_Count
 };
 
 #if (defined(GMOD) || defined(GMOD_ALLOW_DEPRECATED))
@@ -114,8 +107,8 @@ static const char *Name[] = {"nil",
                              "particlesystem",
                              "projectedtexture",
                              "physcollide",
-
-                             0};
+                             "surfaceinfo",
+                             nullptr};
 #endif
 } // namespace Type
 } // namespace Lua

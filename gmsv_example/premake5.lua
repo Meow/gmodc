@@ -1,21 +1,26 @@
 local config = {
   garrysmod = '/home/example/server',
-  libname = 'gmsv_example_'..(os.target() == 'windows' and 'win32' or 'linux')..'.dll',
   std = 'C89'
 }
 
+-- Garry's Mod picks the binary to load by its platform suffix:
+-- https://wiki.facepunch.com/gmod/Creating_Binary_Modules:_Premake
+local suffixes = {
+  windows = { x86 = '_win32', x86_64 = '_win64' },
+  linux = { x86 = '_linux', x86_64 = '_linux64' },
+  macosx = { x86 = '_osx', x86_64 = '_osx64' }
+}
+
 local is_windows = os.target() == 'windows'
-local is_linux = not is_windows
+local is_linux = os.target() == 'linux'
 local ansi_c = string.lower(config.std) == 'c89' or string.lower(config.std) == 'ansi'
-local suffix = is_windows and '_win' or '_linux'
+local suffix = assert(suffixes[os.target()], 'unsupported target system: '..os.target())
 
 workspace 'example'
   location './project'
   configurations { 'x86', 'x86_64' }
-  flags { 'NoPCH', 'NoImportLib'}
   symbols 'On'
   editandcontinue 'Off'
-  vectorextensions 'SSE'
   defines { 'NDEBUG' }
   optimize 'Full'
   floatingpoint 'Fast'
@@ -23,21 +28,24 @@ workspace 'example'
   -- Link stdlib statically for compatibility.
   if is_linux then
     linkoptions{ '-static-libstdc++', '-static-libgcc' }
-  else
+  elseif is_windows then
     staticruntime 'on'
   end
 
   filter "configurations:x86"
     architecture 'x86'
-    targetsuffix(suffix..(is_windows and '32' or ''))
+    vectorextensions 'SSE'
+    targetsuffix(suffix.x86)
 
   filter "configurations:x86_64"
     architecture 'x86_64'
-    targetsuffix(suffix..'64')
+    targetsuffix(suffix.x86_64)
 
 project 'example'
   kind 'SharedLib'
+  -- The module itself is C, only the bundled CCompat.cpp is built as C++.
   language 'C'
+  cppdialect 'C++11'
   location './project'
   targetdir './bin'
   -- libdirs { '../lib/'..string.lower(os.target()) }
@@ -45,21 +53,23 @@ project 'example'
   targetprefix 'gmsv_'
   targetextension '.dll'
 
-  if is_linux then
-    if ansi_c then
-      buildoptions { '-ansi', '-pedantic' }
-    end
+  files {
+    '../include/GarrysMod/Lua/CCompat.cpp',
+    'src/**.c',
+    'src/**.h'
+  }
 
+  if not is_windows then
     pic 'On'
-  end
 
-  language 'C++'
-    files { '../include/GarrysMod/Lua/CCompat.cpp' }
-  language 'C'
-    files {
-      'src/**.c',
-      'src/**.h'
-    }
+    if ansi_c then
+      cdialect 'C89'
+
+      filter 'files:**.c'
+        buildoptions { '-pedantic' }
+      filter {}
+    end
+  end
 
   --[[
   if is_windows then
@@ -71,6 +81,6 @@ project 'example'
 
   --[[
   postbuildcommands {
-    '{COPY} "%{cfg.buildtarget.abspath}" "'..config.garrysmod..'/garrysmod/lua/bin/'..config.libname..'"*',
+    '{COPY} "%{cfg.buildtarget.abspath}" "'..config.garrysmod..'/garrysmod/lua/bin/%{cfg.buildtarget.name}"',
   }
   ]]

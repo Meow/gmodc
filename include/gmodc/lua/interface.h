@@ -14,9 +14,9 @@ enum {
 
 #ifndef GMOD
 #ifdef _WIN32
-#define DLL_EXPORT __declspec(dllexport)
+#define GMOD_DLL_EXPORT __declspec(dllexport)
 #else
-#define DLL_EXPORT __attribute__((visibility("default")))
+#define GMOD_DLL_EXPORT __attribute__((visibility("default")))
 #endif
 
 #ifdef GMOD_MODULE_OPEN
@@ -31,30 +31,30 @@ enum {
 #undef LUA_FUNCTION
 #endif
 
-#define GMOD_MODULE_OPEN()                      \
-  int gmod13_open__Imp(luabase_t *LUA);         \
-  DLL_EXPORT int gmod13_open(lua_State *L)      \
-  {                                             \
-    return gmod13_open__Imp(lua_get_base(L));   \
-  }                                             \
+#define GMOD_MODULE_OPEN()                        \
+  int gmod13_open__Imp(luabase_t *LUA);           \
+  GMOD_DLL_EXPORT int gmod13_open(lua_State *L)   \
+  {                                               \
+    return gmod13_open__Imp(lua_get_base(L));     \
+  }                                               \
   int gmod13_open__Imp(luabase_t *LUA)
 
-#define GMOD_MODULE_CLOSE()                     \
-  int gmod13_close__Imp(luabase_t *LUA);        \
-  DLL_EXPORT int gmod13_close(lua_State *L)     \
-  {                                             \
-    return gmod13_close__Imp(lua_get_base(L));  \
-  }                                             \
+#define GMOD_MODULE_CLOSE()                       \
+  int gmod13_close__Imp(luabase_t *LUA);          \
+  GMOD_DLL_EXPORT int gmod13_close(lua_State *L)  \
+  {                                               \
+    return gmod13_close__Imp(lua_get_base(L));    \
+  }                                               \
   int gmod13_close__Imp(luabase_t *LUA)
 
-#define LUA_FUNCTION(FUNC)                      \
-  int FUNC##__Imp(luabase_t *LUA);              \
-  int FUNC(lua_State *L)                        \
-  {                                             \
-    luabase_t *LUA = lua_get_base(L);           \
-    lua_set_state(LUA, L);                      \
-    return FUNC##__Imp(LUA);                    \
-  }                                             \
+#define LUA_FUNCTION(FUNC)                        \
+  int FUNC##__Imp(luabase_t *LUA);                \
+  int FUNC(lua_State *L)                          \
+  {                                               \
+    luabase_t *LUA = lua_get_base(L);             \
+    lua_set_state(LUA, L);                        \
+    return FUNC##__Imp(LUA);                      \
+  }                                               \
   int FUNC##__Imp(luabase_t *LUA)
 #endif
 

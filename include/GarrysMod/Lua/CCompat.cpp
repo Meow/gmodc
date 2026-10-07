@@ -1,3 +1,6 @@
+/* lua_push_userdata needs ILuaBase::PushUserdata, which is otherwise hidden. */
+#define GMOD_ALLOW_DEPRECATED
+
 #include <stdlib.h>
 #include "LuaBase.h"
 #include "Interface.h"
